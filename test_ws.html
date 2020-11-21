@@ -1,0 +1,109 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+
+  <title>Signal K Sample Consumer</title>
+</head>
+<body>
+  <pre>
+    <div id="data"/>
+  </pre>
+</body>
+
+<script>
+    var count=0;
+var ws = new WebSocket((window.location.protocol === 'https:' ? 'wss' : 'ws') + "://127.0.0.1:3000/signalk/v1/stream?subscribe=none");
+var token="";
+var dataDiv = document.getElementById('data');
+var timestamp=new Date().toISOString();
+var msg = {    
+    context: "vessels.self",
+    subscribe: [
+    {
+      path: "navigation.position",
+      period: 2000,
+      format: "full",
+      policy: "ideal",
+      minPeriod: 2000
+    }
+  ]
+};
+
+var msg1={
+  "requestId": "1234-45653-343455",
+  "login": {
+    "username": "fapu",
+    "password": "Hydro!2022"
+  }
+};
+
+  // Envoi de l'objet msg à travers une chaîne formatée en JSON
+  ws.onopen = function (event) {
+  ws.send(JSON.stringify(msg1));
+    };
+
+  ws.onmessage = function(event) {
+  console.log(event.data);
+
+
+setInterval(function(){
+    count+=1;
+    latitude = 47.80+count/10000;
+    timestamp = new Date();
+    var msg3=
+    {
+        "token":token,
+         "context": "vessels.urn:mrn:imo:mmsi:234567890",
+         "name" : "boat-5623",
+         "updates": [
+            {
+            "source": {
+                "label": "N2000-01",
+                "type": "NMEA2000",
+                "src": "017",
+                "pgn": 127488
+            },
+            "timestamp": timestamp.toString(),
+            "values": [
+                {
+                "path" : "name",
+                "value" : "boat-26563"
+                },
+                 {
+                "path":"navigation.speedOverGround",
+                "value": 4.32693662
+                },
+                {
+                "path":"navigation.position",
+                "value": {
+                    "altitude": 0.0,
+                    "latitude": latitude,
+                    "longitude": -3.96
+                }
+                },            
+                {
+                "path":"navigation.headingMagnetic",
+                "value": 5.55014702
+                }
+            ]
+            }
+        ]
+    }
+
+   
+    console.log(JSON.stringify(msg3));
+    ws.send(JSON.stringify(msg3));
+},1000);
+
+
+};
+
+  ws.onclose = function() {
+  console.log("ws close");
+};
+
+</script>
+</html>
