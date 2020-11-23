@@ -1,10 +1,6 @@
-const MQTT = require("async-mqtt");
-
-const client = MQTT.connect("mqtt://test.mosquitto.org");
-
 // When passing async functions as event listeners, make sure to have a try catch block
 
-const doStuff = async () => {
+const doStuff = async (client) => {
 
 	console.log("Starting");
 	try {
@@ -26,4 +22,3 @@ const doStuff = async () => {
 	}
 }
 
-client.on("connect", doStuff);
