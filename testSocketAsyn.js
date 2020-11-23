@@ -2,7 +2,7 @@ var WebSocketClient = require('websocket').client;
 var client = new WebSocketClient();
 var websocketConnection;
 var signalkToken;
-
+var count=0;
 const MQTT = require("async-mqtt");
 const mqttClient = MQTT.connect("mqtt://test.mosquitto.org");
 
@@ -19,11 +19,10 @@ const doStuff = async () => {
         
         mqttClient.on('message', function (topic, message) {
             // message is Buffer
-            //console.log(message.toString())
-            dataSend(websocketConnection,signalkToken);
+            let payload=message.toString();
+            dataSend(websocketConnection,signalkToken, payload);
             //client.end()
         })
-		console.log("Done");
 	} catch (e){
 		// Do something about it!
 		console.log(e.stack);
@@ -44,9 +43,9 @@ function authentRequest(connection){
 
 };
 
-function dataSend(connection, token){
-    console.log("datasending...");
-    let count=0;
+function dataSend(connection, token,payload){
+    console.log("datasending..." + payload);
+    let objPayload=JSON.parse(payload);
         count+=1;
         latitude = 47.80+count/10000;
         timestamp = new Date();
@@ -77,21 +76,21 @@ function dataSend(connection, token){
                     "path":"navigation.position",
                     "value": {
                         "altitude": 0.0,
-                        "latitude": latitude,
-                        "longitude": -3.96
+                        "latitude": objPayload.lat,
+                        "longitude": objPayload.lon
                     }
                     },            
                     {
                     "path":"navigation.headingMagnetic",
-                    "value": 5.55014702
+                    "value": 85.0
                     }
                 ]
                 }
             ]
         }
          
-        console.log(JSON.stringify(msgPosition));
-        connection.send(JSON.stringify(msgPosition));
+        //console.log(JSON.stringify(msgPosition));
+        //connection.send(JSON.stringify(msgPosition));
 
 }
 

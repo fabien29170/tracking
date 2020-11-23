@@ -7,7 +7,7 @@ var latWptCourant=0;
 var lonWptCourant=0;
 var pasLat=0;
 var pasLon=0;
-
+var COG=90;
 
 // read XML from a file
 const xml = fs.readFileSync('gpxTrack.xml');
@@ -29,6 +29,7 @@ xml2js.parseString(xml, { mergeAttrs: true }, (err, result) => {
     lonWpt1=parseFloat(result.gpx.wpt[1].lon);
     pasLat=(latWpt1-latWpt0)/100;
     pasLon=(lonWpt1-lonWpt0)/100;
+    COG=90-Math.atan(pasLat/pasLon);
 
     latWptCourant=latWpt0;
     lonWptCourant=lonWpt0;
@@ -46,7 +47,7 @@ client.on('connect', function () {
     latWptCourant+=pasLat;
     lonWptCourant+=pasLon;
     timestamp = new Date();
-    sentence = '{"lon":'+lonWptCourant+',"lat":'+latWptCourant+',"cog":258,"sog":15.8,"timestamp":"'+timestamp.toISOString()+'"}';
+    sentence = '{"lon":'+lonWptCourant+',"lat":'+latWptCourant+',"cog":'+COG+',"sog":15.8,"timestamp":"'+timestamp.toISOString()+'"}';
     console.log("Publishing "+sentence);
     client.publish('tracking/boat-52358/nav', sentence,{retain:true,qos:1});
 },1000);
