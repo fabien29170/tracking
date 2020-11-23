@@ -2,9 +2,22 @@ function myDisplayer(some) {
     console.log(some);
   }
   
-  function myCalculator(num1, num2, myCallback) {
-    let sum = num1 + num2;
-    myCallback(sum);
-  }
+  let myPromise = new Promise(function(myResolve, myReject) {
+    
+    function compute(){ 
+        let x = 1+a;
+        if (x == 3) {
+            myResolve("OK");
+          } else {
+            myReject("Error");
+          };
+    };
+    let a=2;
+    setTimeout(compute,5000);
+  // The producing code (this may take some time)
+});
   
-  myCalculator(5, 5, myDisplayer);
+  myPromise.then(
+    function(value) {myDisplayer(value);},
+    function(error) {myDisplayer(error);}
+  );
